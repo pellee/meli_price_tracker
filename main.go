@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import "meli_price_tracker/cmd"
 
 func main() {
-	fmt.Println("hola")
+	cmd.Execute()
 }
