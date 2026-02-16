@@ -40,7 +40,7 @@ func formatString(params []string) string {
 	return buff.String()
 }
 
-func listCommand(cmd *cobra.Command, args []string) {
+func listAll() {
 	writter := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 	formatedString := formatString([]string{"Id", "Name", "Link", "Price"})
 	fmt.Fprintf(writter, formatedString, "Id", "Name", "Link", "Price")
@@ -57,6 +57,36 @@ func listCommand(cmd *cobra.Command, args []string) {
 		}
 	}
 	writter.Flush()
+}
 
+func listAllLowerPrice() {
+	writter := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	formatedString := formatString([]string{"Id", "Name", "Link", "Price"})
+	fmt.Fprintf(writter, formatedString, "Id", "Name", "Link", "Price")
+
+	for _, item := range listOfItemsTracked {
+		if len(item.Links) > 0 {
+			finalPrice := item.Links[0].Price
+			idxFinalPrice := 0
+			for i := 1; i < len(item.Links); i++ {
+				if item.Links[i].Price < finalPrice {
+					finalPrice = item.Links[i].Price
+					idxFinalPrice = i
+				}
+			}
+			formatedString = formatString([]string{string(item.Id), item.Name, item.Links[idxFinalPrice].Link, strconv.FormatFloat(float64(item.Links[idxFinalPrice].Price), 'f', -1, 32)})
+			fmt.Fprintf(writter, formatedString, item.Id, item.Name, item.Links[idxFinalPrice].Link, item.Links[idxFinalPrice].Price)
+		}
+	}
+	writter.Flush()
+}
+
+func listCommand(cmd *cobra.Command, args []string) {
+	if allFlag {
+		listAll()
+		os.Exit(1)
+	}
+
+	listAllLowerPrice()
 	os.Exit(1)
 }
