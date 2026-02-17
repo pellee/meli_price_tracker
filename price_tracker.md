@@ -1,3 +1,5 @@
+in go if a function is in camelCase is a "private" function. If it is in PascalCase is a "public" function
+
 # Names?
 - mpt
 - metr

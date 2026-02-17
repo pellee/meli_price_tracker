@@ -1,11 +1,10 @@
 package cmd
 
 import (
-	"bytes"
-	"fmt"
 	"os"
-	"strconv"
 	"text/tabwriter"
+
+	"meli_price_tracker/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -25,50 +24,31 @@ var listCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(listCmd)
 	listCmd.Flags().BoolVarP(&allFlag, "all", "a", false, "to get all the information")
-	listCmd.Flags().Int32VarP(&id, "id", "i", -1, "list a specific item in the list.")
-}
-
-func formatString(params []string) string {
-	var buff bytes.Buffer
-
-	for i := range params {
-		buff.WriteString("%v")
-		if i+1 != len(params) {
-			buff.WriteString("\t")
-		}
-	}
-
-	buff.WriteString("\n")
-
-	return buff.String()
+	listCmd.Flags().Int32VarP(&id, "id", "i", 0, "list a specific item in the list.")
 }
 
 func listAll() {
 	writter := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	formatedString := formatString([]string{"Id", "Name", "Link", "Price"})
-	fmt.Fprintf(writter, formatedString, "Id", "Name", "Link", "Price")
+
+	utils.AddItem(writter, []any{"Id", "Name", "Link", "Price"})
 
 	for _, item := range listOfItemsTracked {
 		if id == -1 {
 			if len(item.Links) > 0 {
 				for _, linkItem := range item.Links {
-					formatedString = formatString([]string{string(item.Id), item.Name, linkItem.Link, strconv.FormatFloat(float64(linkItem.Price), 'f', -1, 32)})
-					fmt.Fprintf(writter, formatedString, item.Id, item.Name, linkItem.Link, linkItem.Price)
+					utils.AddItem(writter, []any{item.Id, item.Name, linkItem.Link, linkItem.Price})
 				}
 			} else {
-				formatedString = formatString([]string{string(item.Id), item.Name, "null", ""})
-				fmt.Fprintf(writter, formatedString, item.Id, item.Name, "null", 0)
+				utils.AddItem(writter, []any{item.Id, item.Name, "null", ""})
 			}
 		} else {
 			if id == item.Id {
 				if len(item.Links) > 0 {
 					for _, linkItem := range item.Links {
-						formatedString = formatString([]string{string(item.Id), item.Name, linkItem.Link, strconv.FormatFloat(float64(linkItem.Price), 'f', -1, 32)})
-						fmt.Fprintf(writter, formatedString, item.Id, item.Name, linkItem.Link, linkItem.Price)
+						utils.AddItem(writter, []any{item.Id, item.Name, linkItem.Link, linkItem.Price})
 					}
 				} else {
-					formatedString = formatString([]string{string(item.Id), item.Name, "null", ""})
-					fmt.Fprintf(writter, formatedString, item.Id, item.Name, "null", 0)
+					utils.AddItem(writter, []any{item.Id, item.Name, "null", ""})
 				}
 			}
 		}
@@ -78,8 +58,7 @@ func listAll() {
 
 func listAllLowerPrice() {
 	writter := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	formatedString := formatString([]string{"Id", "Name", "Link", "Price"})
-	fmt.Fprintf(writter, formatedString, "Id", "Name", "Link", "Price")
+	utils.AddItem(writter, []any{"Id", "Name", "Link", "Price"})
 
 	for _, item := range listOfItemsTracked {
 		if id == -1 {
@@ -92,8 +71,7 @@ func listAllLowerPrice() {
 						idxFinalPrice = i
 					}
 				}
-				formatedString = formatString([]string{string(item.Id), item.Name, item.Links[idxFinalPrice].Link, strconv.FormatFloat(float64(item.Links[idxFinalPrice].Price), 'f', -1, 32)})
-				fmt.Fprintf(writter, formatedString, item.Id, item.Name, item.Links[idxFinalPrice].Link, item.Links[idxFinalPrice].Price)
+				utils.AddItem(writter, []any{item.Id, item.Name, item.Links[idxFinalPrice].Link, item.Links[idxFinalPrice].Price})
 			}
 		} else {
 			if id == item.Id {
@@ -106,8 +84,7 @@ func listAllLowerPrice() {
 							idxFinalPrice = i
 						}
 					}
-					formatedString = formatString([]string{string(item.Id), item.Name, item.Links[idxFinalPrice].Link, strconv.FormatFloat(float64(item.Links[idxFinalPrice].Price), 'f', -1, 32)})
-					fmt.Fprintf(writter, formatedString, item.Id, item.Name, item.Links[idxFinalPrice].Link, item.Links[idxFinalPrice].Price)
+					utils.AddItem(writter, []any{item.Id, item.Name, item.Links[idxFinalPrice].Link, item.Links[idxFinalPrice].Price})
 				}
 			}
 		}
