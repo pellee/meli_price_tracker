@@ -58,8 +58,37 @@ mpt add 1 --links
 ## mpt list
 
 print the list of items tracked and the link with the lower price. --all shows all the information.
-mpt list
+mpt list: list the items and the links with the lower price.
+| Id | Name | Link | Price |
+| --------------- | --------------- | --------------- | --------------- |
+| 1 | Bordeadora | https://mercadolibre.com.ar/... | 549.12 |
+| 2 | Cortadora de Pelo | https://mercadolibre.com.ar/... | 120.12 |
+| 3 | Pileta | https://mercadolibre.com.ar/... | 12312.12 |
 
+mpt list --all: list the items and all the links.
+
+| Id | Name | Link | Price |
+| --------------- | --------------- | --------------- | --------------- |
+| 1 | Bordeadora | https://mercadolibre.com.ar/... | 549.12 |
+| 1 | Bordeadora | https://mercadolibre.com.ar/... | 549.12 |
+| 1 | Bordeadora | https://mercadolibre.com.ar/... | 549.12 |
+| 2 | Cortadora de Pelo | https://mercadolibre.com.ar/... | 120.12 |
+| 2 | Cortadora de Pelo | https://mercadolibre.com.ar/... | 120.12 |
+| 3 | Pileta | https://mercadolibre.com.ar/... | 12312.12 |
+
+
+mpt list [id]
+
+| Id | Name | Link | Price |
+| --------------- | --------------- | --------------- | --------------- |
+| 1 | Bordeadora | https://mercadolibre.com.ar/... | 549.12 |
+mpt list id --all
+
+| Id | Name | Link | Price |
+| --------------- | --------------- | --------------- | --------------- |
+| 1 | Bordeadora | https://mercadolibre.com.ar/... | 549.12 |
+| 1 | Bordeadora | https://mercadolibre.com.ar/... | 549.12 |
+| 1 | Bordeadora | https://mercadolibre.com.ar/... | 549.12 |
 ## mpt track
 
 starts tracking the elements of the list. can pass a parameter of the id of an item and only track that one.

@@ -10,8 +10,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// id      int32
-var allFlag bool
+var (
+	id      int32
+	allFlag bool
+)
 
 var listCmd = &cobra.Command{
 	Use:   "list [id optionally] [-a --all]",
@@ -23,6 +25,7 @@ var listCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(listCmd)
 	listCmd.Flags().BoolVarP(&allFlag, "all", "a", false, "to get all the information")
+	listCmd.Flags().Int32VarP(&id, "id", "i", -1, "list a specific item in the list.")
 }
 
 func formatString(params []string) string {
@@ -46,14 +49,28 @@ func listAll() {
 	fmt.Fprintf(writter, formatedString, "Id", "Name", "Link", "Price")
 
 	for _, item := range listOfItemsTracked {
-		if len(item.Links) > 0 {
-			for _, linkItem := range item.Links {
-				formatedString = formatString([]string{string(item.Id), item.Name, linkItem.Link, strconv.FormatFloat(float64(linkItem.Price), 'f', -1, 32)})
-				fmt.Fprintf(writter, formatedString, item.Id, item.Name, linkItem.Link, linkItem.Price)
+		if id == -1 {
+			if len(item.Links) > 0 {
+				for _, linkItem := range item.Links {
+					formatedString = formatString([]string{string(item.Id), item.Name, linkItem.Link, strconv.FormatFloat(float64(linkItem.Price), 'f', -1, 32)})
+					fmt.Fprintf(writter, formatedString, item.Id, item.Name, linkItem.Link, linkItem.Price)
+				}
+			} else {
+				formatedString = formatString([]string{string(item.Id), item.Name, "null", ""})
+				fmt.Fprintf(writter, formatedString, item.Id, item.Name, "null", 0)
 			}
 		} else {
-			formatedString = formatString([]string{string(item.Id), item.Name, "null", ""})
-			fmt.Fprintf(writter, formatedString, item.Id, item.Name, "null", 0)
+			if id == item.Id {
+				if len(item.Links) > 0 {
+					for _, linkItem := range item.Links {
+						formatedString = formatString([]string{string(item.Id), item.Name, linkItem.Link, strconv.FormatFloat(float64(linkItem.Price), 'f', -1, 32)})
+						fmt.Fprintf(writter, formatedString, item.Id, item.Name, linkItem.Link, linkItem.Price)
+					}
+				} else {
+					formatedString = formatString([]string{string(item.Id), item.Name, "null", ""})
+					fmt.Fprintf(writter, formatedString, item.Id, item.Name, "null", 0)
+				}
+			}
 		}
 	}
 	writter.Flush()
@@ -65,17 +82,34 @@ func listAllLowerPrice() {
 	fmt.Fprintf(writter, formatedString, "Id", "Name", "Link", "Price")
 
 	for _, item := range listOfItemsTracked {
-		if len(item.Links) > 0 {
-			finalPrice := item.Links[0].Price
-			idxFinalPrice := 0
-			for i := 1; i < len(item.Links); i++ {
-				if item.Links[i].Price < finalPrice {
-					finalPrice = item.Links[i].Price
-					idxFinalPrice = i
+		if id == -1 {
+			if len(item.Links) > 0 {
+				finalPrice := item.Links[0].Price
+				idxFinalPrice := 0
+				for i := 1; i < len(item.Links); i++ {
+					if item.Links[i].Price < finalPrice {
+						finalPrice = item.Links[i].Price
+						idxFinalPrice = i
+					}
+				}
+				formatedString = formatString([]string{string(item.Id), item.Name, item.Links[idxFinalPrice].Link, strconv.FormatFloat(float64(item.Links[idxFinalPrice].Price), 'f', -1, 32)})
+				fmt.Fprintf(writter, formatedString, item.Id, item.Name, item.Links[idxFinalPrice].Link, item.Links[idxFinalPrice].Price)
+			}
+		} else {
+			if id == item.Id {
+				if len(item.Links) > 0 {
+					finalPrice := item.Links[0].Price
+					idxFinalPrice := 0
+					for i := 1; i < len(item.Links); i++ {
+						if item.Links[i].Price < finalPrice {
+							finalPrice = item.Links[i].Price
+							idxFinalPrice = i
+						}
+					}
+					formatedString = formatString([]string{string(item.Id), item.Name, item.Links[idxFinalPrice].Link, strconv.FormatFloat(float64(item.Links[idxFinalPrice].Price), 'f', -1, 32)})
+					fmt.Fprintf(writter, formatedString, item.Id, item.Name, item.Links[idxFinalPrice].Link, item.Links[idxFinalPrice].Price)
 				}
 			}
-			formatedString = formatString([]string{string(item.Id), item.Name, item.Links[idxFinalPrice].Link, strconv.FormatFloat(float64(item.Links[idxFinalPrice].Price), 'f', -1, 32)})
-			fmt.Fprintf(writter, formatedString, item.Id, item.Name, item.Links[idxFinalPrice].Link, item.Links[idxFinalPrice].Price)
 		}
 	}
 	writter.Flush()
