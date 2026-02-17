@@ -29,28 +29,19 @@ func init() {
 
 func listAll() {
 	writter := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-
 	utils.AddItem(writter, []any{"Id", "Name", "Link", "Price"})
 
 	for _, item := range listOfItemsTracked {
-		if id == -1 {
-			if len(item.Links) > 0 {
-				for _, linkItem := range item.Links {
-					utils.AddItem(writter, []any{item.Id, item.Name, linkItem.Link, linkItem.Price})
-				}
-			} else {
-				utils.AddItem(writter, []any{item.Id, item.Name, "null", ""})
+		if id != 0 && id != item.Id {
+			continue
+		}
+
+		if len(item.Links) > 0 {
+			for _, linkItem := range item.Links {
+				utils.AddItem(writter, []any{item.Id, item.Name, linkItem.Link, linkItem.Price})
 			}
 		} else {
-			if id == item.Id {
-				if len(item.Links) > 0 {
-					for _, linkItem := range item.Links {
-						utils.AddItem(writter, []any{item.Id, item.Name, linkItem.Link, linkItem.Price})
-					}
-				} else {
-					utils.AddItem(writter, []any{item.Id, item.Name, "null", ""})
-				}
-			}
+			utils.AddItem(writter, []any{item.Id, item.Name, "null", "null"})
 		}
 	}
 	writter.Flush()
@@ -61,7 +52,7 @@ func listAllLowerPrice() {
 	utils.AddItem(writter, []any{"Id", "Name", "Link", "Price"})
 
 	for _, item := range listOfItemsTracked {
-		if id == -1 {
+		if id == 0 {
 			if len(item.Links) > 0 {
 				finalPrice := item.Links[0].Price
 				idxFinalPrice := 0
@@ -95,9 +86,7 @@ func listAllLowerPrice() {
 func listCommand(cmd *cobra.Command, args []string) {
 	if allFlag {
 		listAll()
-		os.Exit(1)
+	} else {
+		listAllLowerPrice()
 	}
-
-	listAllLowerPrice()
-	os.Exit(1)
 }
